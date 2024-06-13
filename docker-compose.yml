@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  dev:
+    container_name: rndmatch_api_dev
+    image: rndmatch_api_dev:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:dev
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+      - 1223:1223
+    networks:
+      - nesjs-network
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - ./docker/mongo/database:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - nesjs-network
+    restart: always
+networks:
+  nesjs-network:
+  elastic:
+    driver: bridge
